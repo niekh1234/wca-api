@@ -14,8 +14,7 @@ export class RecordService {
 
       const $ = await scrapeWebpage(process.env.WCA_HOST + '/results/records');
       const results = $('#results-list').children().toArray();
-      const output = {} as any;
-      let lastEvent = '';
+      const output = [] as any;
 
       while (results.length > 0) {
         const child = results.shift();
@@ -30,20 +29,38 @@ export class RecordService {
           const eventName = this.getEventName($, child);
           const eventSlug = this.createSlug(eventName);
 
-          output[eventSlug] = { name: eventName, records: {} };
-          lastEvent = eventSlug;
+          output.push({
+            event: eventName,
+            slug: eventSlug,
+            records: {},
+          });
         }
 
         if (type === 'div') {
           const records = this.getEventRecords($, child);
 
-          output[lastEvent].records = { ...output[lastEvent].records, ...records };
+          output[output.length - 1].records = records;
         }
       }
 
       await setCacheData('records', output);
 
       return output;
+    } catch (err: any) {
+      throw new Error(err.message);
+    }
+  }
+
+  public async getRecord(event: string) {
+    try {
+      const records = await this.getRecords();
+      const record = records.find((record: any) => record.slug === event);
+
+      if (!record) {
+        throw new Error('Record not found');
+      }
+
+      return record;
     } catch (err: any) {
       throw new Error(err.message);
     }

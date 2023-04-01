@@ -23,13 +23,9 @@ export class RecordController {
   public async getRecord(req: Request, res: Response) {
     try {
       const { event } = req.params;
-      const records = await this.recordService.getRecords();
+      const record = await this.recordService.getRecord(event);
 
-      if (!records[event]) {
-        return notFound(res, 'Record not found');
-      }
-
-      ok(res, records[event].records);
+      ok(res, record);
     } catch (err: any) {
       console.log(err);
       internalServerError(res, 'The server encountered an error');
