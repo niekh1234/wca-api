@@ -6,7 +6,7 @@ export let redisClient: RedisClientType;
 
 export const createTheRedisClient = () => {
   const client = createClient({
-    url: 'redis://localhost:6379',
+    url: process.env.REDIS_URL,
     password: process.env.REDIS_PASSWORD,
   });
 
