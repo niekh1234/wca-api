@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "clear-redis": "ts-node scripts/clear-redis-cache.ts"
   },
   "_moduleAliases": {
     "@": "src"
