@@ -15,6 +15,7 @@ export class RecordController {
 
       ok(res, records);
     } catch (err: any) {
+      console.log(err);
       internalServerError(res, 'The server encountered an error');
     }
   }
@@ -30,6 +31,7 @@ export class RecordController {
 
       ok(res, records[event].records);
     } catch (err: any) {
+      console.log(err);
       internalServerError(res, 'The server encountered an error');
     }
   }
