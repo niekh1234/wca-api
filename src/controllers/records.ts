@@ -13,7 +13,7 @@ export class RecordController {
     try {
       const records = await this.recordService.getRecords();
 
-      ok(res, records);
+      ok(res, { records });
     } catch (err: any) {
       console.log(err);
       internalServerError(res, 'The server encountered an error');
@@ -25,7 +25,7 @@ export class RecordController {
       const { event } = req.params;
       const record = await this.recordService.getRecord(event);
 
-      ok(res, record);
+      ok(res, { record });
     } catch (err: any) {
       console.log(err);
       internalServerError(res, 'The server encountered an error');
