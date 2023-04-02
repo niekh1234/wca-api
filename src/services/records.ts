@@ -76,8 +76,8 @@ export class RecordService {
       ];
 
       formatted['average'] = {
-        name: row.eq(3).text().trim(),
-        n: row.eq(4).text().trim(),
+        name: row.eq(4).text().trim(),
+        n: row.eq(3).text().trim(),
         attempts: attemps.filter((attempt) => attempt !== '').sort((a, b) => a.localeCompare(b)),
       };
     }
