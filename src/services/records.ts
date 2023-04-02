@@ -1,6 +1,6 @@
 import { scrapeWebpage } from '@/lib/scraper';
 import { slugify } from '@/utils';
-import { CheerioAPI, Element } from 'cheerio';
+import { Cheerio, CheerioAPI, Element } from 'cheerio';
 import { getCacheData, setCacheData } from '@/lib/redis';
 
 export class RecordService {
@@ -12,35 +12,24 @@ export class RecordService {
         return cacheHit;
       }
 
-      const $ = await scrapeWebpage(process.env.WCA_HOST + '/results/records');
-      const results = $('#results-list').children().toArray();
+      const $ = await scrapeWebpage(process.env.WCA_HOST + '/results/records?show=slim');
+      const results = $('#results-list .table tbody').children().toArray();
+
       const output = [] as any;
 
-      while (results.length > 0) {
-        const child = results.shift();
+      for (const result of results) {
+        const { event, ...rowData } = this.parseRow($, $(result).find('td'));
 
-        if (!child) {
-          break;
+        if (!event) {
+          continue;
         }
 
-        const { name: type } = child;
-
-        if (type === 'h2') {
-          const eventName = this.getEventName($, child);
-          const eventSlug = this.createSlug(eventName);
-
-          output.push({
-            event: eventName,
-            slug: eventSlug,
-            records: {},
-          });
-        }
-
-        if (type === 'div') {
-          const records = this.getEventRecords($, child);
-
-          output[output.length - 1].records = records;
-        }
+        const eventSlug = this.createSlug(event);
+        output.push({
+          event,
+          slug: eventSlug,
+          records: rowData,
+        });
       }
 
       await setCacheData('records', output);
@@ -66,29 +55,34 @@ export class RecordService {
     }
   }
 
-  private getEventName($: CheerioAPI, element: Element) {
-    return $(element).text().trim();
-  }
+  private parseRow($: CheerioAPI, row: Cheerio<Element>) {
+    let formatted = {
+      event: row.eq(2).text().trim(),
+      single: {
+        name: row.eq(0).text().trim(),
+        n: row.eq(1).text().trim(),
+      },
+      average: {},
+    };
 
-  private getEventRecords($: CheerioAPI, element: Element) {
-    const data = $(element).find('tbody tr');
+    const hasAverage = row.eq(3).text().trim() !== '';
 
-    const records = {} as any;
+    if (hasAverage) {
+      const attemps = [
+        row.eq(5).text().trim(),
+        row.eq(6).text().trim(),
+        row.eq(7).text().trim(),
+        row.eq(8).text().trim(),
+      ];
 
-    data.each((_, el) => {
-      const rows = $(el).find('td');
-      const type = rows.eq(0).text().trim().toLowerCase();
-      const name = rows.eq(1).text().trim();
-      const amount = parseFloat(rows.eq(2).text().trim() || '0');
+      formatted['average'] = {
+        name: row.eq(3).text().trim(),
+        n: row.eq(4).text().trim(),
+        attempts: attemps.filter((attempt) => attempt !== '').sort((a, b) => a.localeCompare(b)),
+      };
+    }
 
-      if (!type || !name || !amount) {
-        throw new Error('Invalid record data');
-      }
-
-      records[type] = { name, n: amount };
-    });
-
-    return records;
+    return formatted;
   }
 
   private createSlug(str: string) {
