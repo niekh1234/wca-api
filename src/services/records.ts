@@ -5,54 +5,46 @@ import { getCacheData, setCacheData } from '@/lib/redis';
 
 export class RecordService {
   public async getRecords() {
-    try {
-      const cacheHit = await getCacheData('records');
+    const cacheHit = await getCacheData('records');
 
-      if (cacheHit) {
-        return cacheHit;
-      }
-
-      const $ = await scrapeWebpage(process.env.WCA_HOST + '/results/records?show=slim');
-      const results = $('#results-list .table tbody').children().toArray();
-
-      const output = [] as any;
-
-      for (const result of results) {
-        const { event, ...rowData } = this.parseRow($, $(result).find('td'));
-
-        if (!event) {
-          continue;
-        }
-
-        const eventSlug = this.createSlug(event);
-        output.push({
-          event,
-          slug: eventSlug,
-          records: rowData,
-        });
-      }
-
-      await setCacheData('records', output);
-
-      return output;
-    } catch (err: any) {
-      throw new Error(err.message);
+    if (cacheHit) {
+      return cacheHit;
     }
+
+    const $ = await scrapeWebpage(process.env.WCA_HOST + '/results/records?show=slim');
+    const results = $('#results-list .table tbody').children().toArray();
+
+    const output = [] as any;
+
+    for (const result of results) {
+      const { event, ...rowData } = this.parseRow($, $(result).find('td'));
+
+      if (!event) {
+        continue;
+      }
+
+      const eventSlug = this.createSlug(event);
+      output.push({
+        event,
+        slug: eventSlug,
+        records: rowData,
+      });
+    }
+
+    await setCacheData('records', output);
+
+    return output;
   }
 
   public async getRecord(event: string) {
-    try {
-      const records = await this.getRecords();
-      const record = records.find((record: any) => record.slug === event);
+    const records = await this.getRecords();
+    const record = records.find((record: any) => record.slug === event);
 
-      if (!record) {
-        throw new Error('Record not found');
-      }
-
-      return record;
-    } catch (err: any) {
-      throw new Error(err.message);
+    if (!record) {
+      throw new Error('Record not found');
     }
+
+    return record;
   }
 
   private parseRow($: CheerioAPI, row: Cheerio<Element>) {
