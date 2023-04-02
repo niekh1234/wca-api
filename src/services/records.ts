@@ -56,6 +56,12 @@ export class RecordService {
   }
 
   private parseRow($: CheerioAPI, row: Cheerio<Element>) {
+    if (row.eq(0).hasClass('blank-cell')) {
+      return {
+        event: null,
+      };
+    }
+
     let formatted = {
       event: row.eq(2).text().trim(),
       single: {
