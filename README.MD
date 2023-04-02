@@ -7,13 +7,13 @@ Simple way to get the results from the world cube association website (specifica
 ### All results
 
 ```bash
-curl https://wca-proxy.niekh.com/v1/records
+curl https://wca-proxy.niekh.com/api/v1/records
 ```
 
 ### Single result
 
 ```bash
-curl https://wca-proxy.niekh.com/v1/records/3x3x3
+curl https://wca-proxy.niekh.com/api/v1/records/3x3x3
 ```
 
 ## Technical details
