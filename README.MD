@@ -24,7 +24,10 @@ Sample response
     "event": "3x3x3 Cube",
     "slug": "3x3x3",
     "records": {
-      "single": { "name": "Yusheng Du (杜宇生)", "n": "3.47" },
+      "single": {
+        "name": "Yusheng Du (杜宇生)",
+        "n": "3.47"
+      },
       "average": {
         "name": "Yiheng Wang (王艺衡)",
         "n": "4.69",
