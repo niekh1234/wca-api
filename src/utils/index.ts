@@ -7,3 +7,9 @@ export const slugify = (str: string, lower = true) => {
 
   return slug;
 };
+
+export const maybeCastedAsNumber = (value: string) => {
+  const casted = !isNaN(Number(value)) ? Number(value) : value;
+
+  return casted;
+};
