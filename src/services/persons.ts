@@ -1,6 +1,6 @@
 import { scrapeWebpage } from '@/lib/scraper';
 import { maybeCastedAsNumber, slugify } from '@/utils';
-import { Cheerio, CheerioAPI, Element } from 'cheerio';
+import { CheerioAPI } from 'cheerio';
 import { getCacheData, setCacheData } from '@/lib/redis';
 
 export class PersonService {

@@ -16,7 +16,7 @@ export class PersonController {
 
       ok(res, { person });
     } catch (err: any) {
-      console.log(err);
+      console.error(err);
       internalServerError(res, 'The server encountered an error');
     }
   }
