@@ -17,7 +17,12 @@ export class PersonController {
       ok(res, { person });
     } catch (err: any) {
       console.error(err);
-      internalServerError(res, 'The server encountered an error');
+
+      if (err.name === 'NotFoundError') {
+        return notFound(res, err.message);
+      }
+
+      return internalServerError(res, 'The server encountered an error');
     }
   }
 }

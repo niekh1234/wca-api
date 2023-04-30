@@ -1,7 +1,8 @@
 import { scrapeWebpage } from '@/lib/scraper';
-import { maybeCastedAsNumber, slugify } from '@/utils';
+import { createEventSlug, maybeCastedAsNumber, slugify } from '@/utils';
 import { CheerioAPI } from 'cheerio';
 import { getCacheData, setCacheData } from '@/lib/redis';
+import { NotFoundError } from '@/errors/not-found';
 
 export class PersonService {
   public async getPerson(id: string) {
@@ -40,7 +41,7 @@ export class PersonService {
     const [element] = $('.details table tbody tr').toArray();
 
     if (!element) {
-      throw new Error('No user details found');
+      throw new NotFoundError('User details not found');
     }
 
     const output = {} as any;
@@ -67,7 +68,7 @@ export class PersonService {
       }
 
       const event = tds.eq(0).text().trim();
-      const eventSlug = slugify(event);
+      const eventSlug = createEventSlug(event);
 
       personalRecords[eventSlug] = {
         event,
