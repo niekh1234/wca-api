@@ -7,3 +7,15 @@ export const slugify = (str: string, lower = true) => {
 
   return slug;
 };
+
+export const createEventSlug = (str: string) => {
+  const slug = slugify(str);
+
+  return slug.replace(/-cube/g, '');
+};
+
+export const maybeCastedAsNumber = (value: string) => {
+  const casted = !isNaN(Number(value)) ? Number(value) : value;
+
+  return casted;
+};

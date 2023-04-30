@@ -1,5 +1,5 @@
 import { scrapeWebpage } from '@/lib/scraper';
-import { slugify } from '@/utils';
+import { createEventSlug, slugify } from '@/utils';
 import { Cheerio, CheerioAPI, Element } from 'cheerio';
 import { getCacheData, setCacheData } from '@/lib/redis';
 
@@ -23,7 +23,7 @@ export class RecordService {
         continue;
       }
 
-      const eventSlug = this.createSlug(event);
+      const eventSlug = createEventSlug(event);
       output.push({
         event,
         slug: eventSlug,
@@ -81,11 +81,5 @@ export class RecordService {
     }
 
     return formatted;
-  }
-
-  private createSlug(str: string) {
-    const slug = slugify(str);
-
-    return slug.replace(/-cube/g, '');
   }
 }
